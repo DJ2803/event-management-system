@@ -23,7 +23,7 @@ import lombok.Setter;
 public class Registration {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long registrationId;
 	
 	private LocalDateTime registrationDate;
@@ -35,6 +35,6 @@ public class Registration {
 	
 	@ManyToOne
     @JoinColumn(name = "event_id")
-    private Events events;
+    private Events event;
 
 }

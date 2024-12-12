@@ -25,21 +25,19 @@ import lombok.Setter;
 public class Users {
 	
 	public enum Role{
-		ADMIN,
 		ORGANIZER,
 		ATTENDEE;
 			
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
 	@Column(nullable = false, unique = true)
 	@Size(min = 8, message = "Username should contain atleast 8 characters")
 	private String username;
 	
-	@JsonIgnore
 	@Column(nullable = false)
 	@Size(min = 8, max = 64, message = "Password should contain atleast 8 characters")
 	private String password;
@@ -53,6 +51,7 @@ public class Users {
 	@Column(nullable = false)
 	private Role role;
 	
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "users", orphanRemoval = true)
 	private List<Registration> registration;
 

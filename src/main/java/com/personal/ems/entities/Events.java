@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ import lombok.Setter;
 public class Events {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long eventId;
 	
 	private String name;
@@ -44,6 +46,7 @@ public class Events {
 	
 	private Boolean isAvailable;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Registration> registrations;
 

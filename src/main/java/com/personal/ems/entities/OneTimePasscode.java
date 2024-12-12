@@ -2,6 +2,7 @@ package com.personal.ems.entities;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapsId;
@@ -19,6 +20,7 @@ import lombok.Setter;
 public class OneTimePasscode {
 	
 	@Id
+	@Column
 	private Long id;
 	
 	private Long otp;

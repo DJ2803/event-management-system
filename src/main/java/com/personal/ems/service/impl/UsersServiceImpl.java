@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.personal.ems.entities.OneTimePasscode;
@@ -38,6 +39,9 @@ public class UsersServiceImpl implements UsersService {
 	@Autowired
     private JavaMailSender javaMailSender;
 	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	@Value("${twilio.account.sid}")
     private String twilioSid;
 
@@ -55,13 +59,12 @@ public class UsersServiceImpl implements UsersService {
 			}else if(usersRepository.existsByEmailId(user.getEmailId())) {
 				return "Email ID already exists";
 			}else {
-//				String hashPassword = passwordEncoder.encode(user.getPassword());
-//				user.setPassword(hashPassword);
+				String hashPassword = passwordEncoder.encode(user.getPassword());
+				user.setPassword(hashPassword);
 				usersRepository.save(user);
 				otpRepository.save(new OneTimePasscode(user.getId(),0L, LocalDateTime.now(), user));
 				return "User added successfully";
-			}
-			
+			}	
 		}catch(Exception e) {
 			throw new UserNameAlreadyExistsException(e.getMessage());
 		}
@@ -74,8 +77,8 @@ public class UsersServiceImpl implements UsersService {
 			var user = usersRepository.findByUsername(usernameOrEmail).or(()->usersRepository.findByEmailId(usernameOrEmail));
 			if(user.isPresent()) {
 				Users temp = user.get();
-//				if(passwordEncoder.matches(password, user.get().getPassword()))
-				if(temp.getPassword().equals(password)){
+				if(passwordEncoder.matches(password, temp.getPassword())) {
+//				if(temp.getPassword().equals(password)){
 					generateAndSaveOtp(user.get().getId());
 //			User userObj=user.get();
 //			UserData data= new UserData();
@@ -109,9 +112,12 @@ public class UsersServiceImpl implements UsersService {
 		try {
 			var user = otpRepository.findById(id);
 			if(user.isPresent()) {
+				System.out.println("Entered 1st if "+ otp);
 				var temp = user.get();
 				if(temp.getGeneratedTime().isBefore(temp.getGeneratedTime().plusMinutes(5))) {
-					if(temp.getOtp()==otp) {
+					System.out.println("Entered 2nd if " + temp.getOtp());
+					if(temp.getOtp().equals(otp)) {
+						System.out.println(temp.getOtp()+ " " + otp);
 						var role = getUserById(id);
 						return role.getRole()+" Login successful";
 					}else {
